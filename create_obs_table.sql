@@ -1,4 +1,4 @@
-CREATE TABLE `observations` (
+CREATE TABLE `ndbc.observations` (
   `json_data` JSON COLLATE utf8_bin DEFAULT NULL,
   `memsql_insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `station_id` as json_data::stn PERSISTED varchar(24) CHARACTER SET utf8 COLLATE utf8_general_ci,
@@ -26,4 +26,4 @@ CREATE TABLE `observations` (
   `obs_time` as json_data::obs_time PERSISTED datetime,
   KEY `memsql_insert_time` (`memsql_insert_time`)
   /*!90618 , SHARD KEY () */
-)
+);

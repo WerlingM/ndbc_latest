@@ -1,44 +1,67 @@
-request = require('request');
+var stringifyObject = require('stringify-object');
+var request = require('request');
 var kafka = require('kafka-node');
 var HighLevelProducer = kafka.HighLevelProducer;
 var Client = kafka.Client;
-var client = new Client();
+//connectionString: Zookeeper connection string, default localhost:2181/
+//var client = new Client('10.2.1.250:2181/kafka', 'ndbc_kafka_client');
+var client = new Client('localhost:2181');
 var topicLatestObs = 'ndbc_latest_obs';
 var producer = new HighLevelProducer(client);
-//var timeStep = 300000; //NDBC realtime data is updated every 5 minutes
-var timeStep = 100000;
+var timeStep = 300000; //NDBC realtime data is updated every 5 minutes
+//var timeStep = 100000;
 
 function obsLineToJSON(line) {
   vals = line.split(/\s+/);
-  newItem = {
-    stn: vals[0],
-    lat: vals[1],
-    lon: vals[2],
-    year: vals[3],
-    month: vals[4],
-    day: vals[5],
-    hour: vals[6],
-    minute: vals[7],
-    wind_dir: vals[8],
-    wind_speed: vals[9],
-    gust: vals[10],
-    wave_height: vals[11],
-    dpd: vals[12],
-    apd: vals[13],
-    mwd: vals[14],
-    pressure: vals[15],
-    ptdy: vals[16],
-    air_temp: vals[17],
-    water_temp: vals[18],
-    dewpoint: vals[19],
-    vis: vals[20],
-    tide: vals[21]
+  newItem = {};
+  newItemFields = [
+    {name: 'stn', type: 'string'},
+    {name: 'lat', type: 'float'},
+    {name: 'lon', type: 'float'},
+    {name: 'year', type: 'int'},
+    {name: 'month', type: 'int'},
+    {name: 'day', type: 'int'},
+    {name: 'hour', type: 'int'},
+    {name: 'minute', type: 'int'},
+    {name: 'wind_dir',    type: 'int'},
+    {name: 'wind_speed',type: 'float'},
+    {name:  'gust',type: 'float'},
+    {name:  'wave_height',type: 'float'},
+    {name:  'dpd',type: 'int'},
+    {name: 'apd',type: 'float'},
+    {name: 'mwd',type: 'int'},
+    {name: 'pressure',type: 'float'},
+    {name: 'ptdy',type: 'float'},
+    {name: 'air_temp',type: 'float'},
+    {name: 'water_temp',type: 'float'},
+    {name: 'dewpoint',type: 'float'},
+    {name: 'vis',type: 'float'},
+    {name: 'tide',type: 'float'}
+  ]
+  if(vals.length != newItemFields.length) {
+    throw "Error, field length not matching: incoming=", vals.length, " expected=", newItemFields.length;
   }
 
-  vals.forEach(function(currVal, currIndex, sourceArray) {
-    if(currVal=='MM') { sourceArray[currIndex] = null}
+  vals.forEach(function(currVal, currIndex) {
+    if(currVal!='MM') {
+      var newVal;
+      fieldName = newItemFields[currIndex].name;
+      switch(newItemFields[currIndex].type) {
+        case 'float':
+          newVal = parseFloat(currVal);
+          break;
+        case 'int':
+          newVal = parseInt(currVal);
+          break;
+        default:
+          newVal = currVal;
+          break;
+      }
+      newItem[fieldName] = newVal;
+    }
   });
-  newItem.obs_time = newItem.year + '-' + newItem.month+ '-' + newItem.day+ ' ' + newItem.hour+ ':' + newItem.minute + ':00';
+  obsDate = new Date(newItem.year,newItem.month,newItem.day,newItem.hour, newItem.minute);
+  newItem.obs_time = obsDate;
   return newItem;
 }
 
@@ -54,20 +77,19 @@ function parseAndSendLatestObs(body) {
   var jsonLines = [];
   lines.forEach(function(currLine) {
     var newItem = obsLineToJSON(currLine);
+    //jsonLines.push(stringifyObject(newItem));
     jsonLines.push(JSON.stringify(newItem));
   });
   var payload = {
     topic: topicLatestObs,
     messages: jsonLines
   }
-console.log(payload);
-process.exit();
   producer.send([payload], function(err, data) {
     if(err) {
       console.error("Error from Kafka: ", err);
       process.exit();
     } else {
-      console.log("Posted ", lines.length, "lines to Kafka, waiting for next round in ", (timeStep/1000));
+      console.log("Posted ", lines.length, "lines to Kafka, waiting for next round in ", (timeStep/1000/60), " minutes");
       //that was fun, let's do it again!
       setTimeout(getNDBCData, timeStep);
     }
