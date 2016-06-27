@@ -60,7 +60,7 @@ function obsLineToJSON(line) {
       newItem[fieldName] = newVal;
     }
   });
-  obsDate = new Date(newItem.year,newItem.month,newItem.day,newItem.hour, newItem.minute);
+  obsDate = `${newItem.year}-${newItem.month}-${newItem.day} ${newItem.hour}:${newItem.minute}`;
   newItem.obs_time = obsDate;
   return newItem;
 }

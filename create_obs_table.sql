@@ -1,7 +1,10 @@
-CREATE TABLE `ndbc.observations` (
+create database ndbc;
+
+use ndbc;
+CREATE TABLE `observations` (
   `json_data` JSON COLLATE utf8_bin DEFAULT NULL,
   `memsql_insert_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `station_id` as json_data::stn PERSISTED varchar(24) CHARACTER SET utf8 COLLATE utf8_general_ci,
+  `station_id` as TRIM(BOTH "\"" FROM json_data::stn) PERSISTED varchar(24) CHARACTER SET utf8 COLLATE utf8_general_ci,
   `year` as json_data::year PERSISTED int(11),
   `month` as json_data::month PERSISTED int(11),
   `day` as json_data::day PERSISTED int(11),
@@ -23,7 +26,7 @@ CREATE TABLE `ndbc.observations` (
   `vis` as json_data::vis PERSISTED float,
   `dpd` as json_data::dpd PERSISTED int(11),
   `apd` as json_data::apd PERSISTED float,
-  `obs_time` as json_data::obs_time PERSISTED datetime,
+  `obs_time` as TIMESTAMP(TRIM(BOTH "\"" FROM json_data::obs_time)) PERSISTED datetime,
   KEY `memsql_insert_time` (`memsql_insert_time`)
   /*!90618 , SHARD KEY () */
 );
