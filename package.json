@@ -2,9 +2,10 @@
   "name": "ndbc_data",
   "version": "1.0.0",
   "description": "Gets data from NOAA's National Data Buoy Center and submits it to a Kafka endpoint",
-  "main": "ndbc_data.js",
+  "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
   },
   "keywords": [
     "data",
@@ -15,8 +16,13 @@
   "author": "Mike Werling",
   "license": "ISC",
   "dependencies": {
+    "jquery": "^3.3.1",
     "kafka-node": "^0.3.3",
-    "request": "^2.72.0",
+    "request": "^2.85.0",
     "stringify-object": "^2.4.0"
+  },
+  "devDependencies": {
+    "electron": "^1.8.4",
+    "request-debug": "^0.2.0"
   }
 }

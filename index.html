@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Hello World!</title>
+    </head>
+    <body>
+      <div class="pageheader">
+        National Buoy Data Center Data Retreival App
+      </div>
+      <div class="pagebody">
+ 
+        <div id="status" style="position:absolute;left:10px;width:70%;height:25%;border:1px solid black;overflow-y:auto;">
+        </div>
+        <!--
+       <div id="zoomdataEmbed" style="position:absolute;bottom:0;height:70%;width:100%">
+          <iframe frameborder="0" id="zoomdataFrame"
+                  style="overflow: hidden; height: 100%; width: 100%">
+          </iframe>
+    
+        </div>
+    
+      </div>
+      -->
+      <div class="pagefooter">
+    
+      </div>
+        <script>
+          // You can also require other files to run in this process
+          require('./js/renderer.js');
+          require('electron').ipcRenderer.on('clearFrame', function(event, message) {
+              console.log('Trying to clear frame', event, message);
+              $('iframe').each(function (){
+                  $(this).attr('src', '');
+              });
+          })
+        </script>
+  </html>
