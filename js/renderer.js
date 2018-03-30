@@ -7,22 +7,22 @@ const ZoomdataUploadSender = require('./ZoomdataUploadSender.js');
 const NbdcData = require('./NbdcData.js');
 const dateUtils = require('./dateUtils.js');
 
-// For Zoombot server 2.6.5
-// ':8080/zoomdata/api/upload/5aa97326e4b03972f6324d32?accountId=5aa81d6de4b08d896b644bbf' -X POST -H "Content-Type: application/json" -d '[{"customer_id":0,"device_id":"value1","drops":2,"errors":3,"load":4,"region":"value5","status":"value6","subscription_level":"value7","timestamp":"2018-03-14T19:08:27.537Z"}]' --insecure
-let statusMessages = [];
-var connectionOptions = {
+let statusMessages = []; //array for messages to display in the status area.  New messages are added to the beginning so they appear at the top of the textarea, and the list is truncated to keep it from getting too big
+
+//For the upload service we need Zoomdata connection info.  Get the accountId and sourceId from the API endpoint when you define the upload source
+var zoomdataConnectionOptions = {
  url: 'http://10.2.7.208',
  port: '8080',
  path: '/zoomdata',
  user: 'admin',
  password: 'zoomdata',
- accountId:'5aaac818e4b0a85d7e8d174a',
- sourceId: '5abcf2f8e4b0667f5e5cf889'
+ accountId:'5aaac818e4b0a85d7e8d174a'
+ //sourceId is defined in the class that posts the source data
 }
 
-let sender = new ZoomdataUploadSender(connectionOptions, onSentMessage);
+let zoomdataSender = new ZoomdataUploadSender(zoomdataConnectionOptions, onSentMessage);
 
-let nbdcData = new NbdcData(sender);
+let nbdcData = new NbdcData([zoomdataSender]);
 
 
 function onSentMessage(resp) {

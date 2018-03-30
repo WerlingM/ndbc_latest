@@ -3,11 +3,11 @@ const request = require('request');
 const dateUtils = require('./dateUtils.js');
 const querystring = require('querystring');
 
-let nbdcData = function(sender) {
-  this.sender = sender;
+let nbdcData = function(senders) {
+  this.senders = senders;
   this.timeStep = 300000; //NDBC realtime data is updated every 5 minutes
   this.pullTimer = null; //timer object that triggers the pull of data
-
+  this.zoomdataSourceId = '5abcf2f8e4b0667f5e5cf889';
 
   this.start = function() {
     console.log('starting data collection');
@@ -93,7 +93,12 @@ let nbdcData = function(sender) {
       jsonLines.push(newItem);
     });
     console.log('final data to send: ', jsonLines);
-    this.sender.sendData(jsonLines);
+    let sendOptions = {
+      sourceId : this.zoomdataSourceId
+    }
+    this.senders.forEach((sender) => {
+      sender.sendData(jsonLines, sendOptions);
+    });
   }
 
   this.getNBDCData = function() {
