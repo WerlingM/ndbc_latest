@@ -42,14 +42,4 @@ The data source must exist in Zoomdata.  Use the following sample to create the 
   }]
   ```
 
-
-  
-  Update the connection variables in the source file with the URL, data source ID, and key for the upload source.
-
-
-  ### Sample CURL request from the API endpoint
-
-  curl -v --user admin:zoomdata 'http://10.2.7.208:8080/zoomdata/api/upload/5abcf2f8e4b0667f5e5cf889?accountId=5aaac818e4b0a85d7e8d174a' -X POST -H "Content-Type: application/json" -d '[{"air_temp":100.5,"apd":101.5,"day":0,"dewpoint":102.5,"dpd":1,"gust":103.5,"hour":2,"lat":104.5,"lon":105.5,"minute":3,"month":4,"mwd":5,"obs_time":"2018-03-29T15:02:54.313Z","pressure":106.5,"ptdy":107.5,"station_id":"value6","tide":108.5,"vis":109.5,"water_temp":110.5,"wave_height":111.5,"wind_dir":7,"wind_speed":112.5,"year":"2018-03-29T15:02:54.313Z"}]' --insecure
-
-
-curl -v --user admin:zoomdata 'http://10.2.7.208:8080/zoomdata/api/upload/5abcf2f8e4b0667f5e5cf889?accountId=5aaac818e4b0a85d7e8d174a' -X POST -H "Content-Type: application/json" -d '[{"station_id":"22101","lat":37.24,"lon":126.02,"year":2018,"month":3,"day":29,"hour":15,"minute":0,"wind_dir":40,"wind_speed":1,"gust":null,"wave_height":null,"dpd":null,"apd":null,"mwd":null,"pressure":1021.9,"ptdy":null,"air_temp":6.1,"water_temp":4.2,"dewpoint":null,"vis":null,"tide":null,"obs_time":"2018-03-29 15:00:00"}]' --insecure
+  Update the connection variables in the renderer.js source file with the URL and key for the upload source.  Update the sourceId in each of the data sources (e.g. NdbcData.js).
