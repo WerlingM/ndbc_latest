@@ -11,35 +11,47 @@ This script runs periodically (every 5 minutes) to pull the [latest observations
 
 Each data line is parsed into a JSON object and a unified date string field is created based on the individual date/time fields.  The data is then sent to a kafka topic (ndbc_latest_obs) for further processing.
 
-Data points are submitted to Zoomdata via the Upload API.
+Data points are submitted to Zoomdata via the Upload API or stored in a specified MySQL database (or MemSQL, which is MySQL compatible).
 
+# Set Up
+To set up, first create the target storage location(s), using either Zoomdata Upload API or a MySQL database.  Then, create the connection settings to persist your choices for storage.  
+
+## Upload API
 The data source must exist in Zoomdata.  Use the following sample to create the Upload source:
-```json
-[{
-  "station_id":"test",
-  "year": 2018,
-  "month": 3,
-  "day": 27,
-  "hour": 14,
-  "minute": 30,
-  "lat": 21.635,
-  "lon":  -58.682,
-  "wind_dir":  140,
-  "wind_speed":4.0,
-  "gust": 6.0,
-  "wave_height":0.6,
-  "mwd": 132,
-  "pressure": 1017.9,
-  "ptdy":1.2,
-  "air_temp":24.8,
-  "water_temp":25.6,
-  "dewpoint": 21.0,
-  "tide": 0.47,
-  "vis": 1.6,
-  "dpd": 7,
-  "apd": 5.1,
-  "obs_time": "3/27/2018 14:30:00"
+
+  ```json
+  [{
+    "station_id":"PKYF1",
+    "lat":24.918,
+    "lon":-80.747,
+    "year":2018,
+    "month":4,
+    "day":2,
+    "hour":14,
+    "minute":0,
+    "wind_dir":140,
+    "wind_speed":4.0,
+    "gust":6.0,
+    "wave_height":0.6,
+    "dpd":7,
+    "apd":5.1,
+    "mwd":132,
+    "pressure":1017.8,
+    "ptdy":1.2,
+    "air_temp":30.2,
+    "water_temp":24.3,
+    "dewpoint":10.0,
+    "vis":2.3,
+    "tide":1.47,
+    "obs_time":"2018-04-02 14:00:00",
+    "lat_attr":"24.918",
+    "lon_attr":"-80.747"
   }]
   ```
 
   Update the connection variables in the renderer.js source file with the URL and key for the upload source.  Update the sourceId in each of the data sources (e.g. NdbcData.js).
+
+## Database Direct Storage
+A connection could target a MySQL or MemSQL (any MySQL compatible database) table.  The target table must be created.
+
+## Create Settings

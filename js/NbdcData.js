@@ -2,12 +2,16 @@ const stringifyObject = require('stringify-object');
 const request = require('request');
 const dateUtils = require('./dateUtils.js');
 const querystring = require('querystring');
+const randUtils = require('./randUtils.js');
 
 let nbdcData = function(senders) {
   this.senders = senders;
   this.timeStep = 300000; //NDBC realtime data is updated every 5 minutes
   this.pullTimer = null; //timer object that triggers the pull of data
-  this.zoomdataSourceId = '5abcf2f8e4b0667f5e5cf889';
+  this.zoomdataSourceId = '5b454c73e4b0ba4947fcede9'; //localhost
+  //this.zoomdataSourceId = '5b460d0f60b28398105c99d7'; //partners
+  //this.zoomdataSourceId = '5b463c66e4b03775f8d72c4f'; //rr-ga
+  this.tableName = 'ndbc_obs_with_error';
 
   this.start = function() {
     console.log('starting data collection');
@@ -70,8 +74,15 @@ let nbdcData = function(senders) {
       fieldName = newItemFields[currIndex].name;
       newItem[fieldName] = newVal;
     });
+    //obsDate combines the individual date fields, formatted for easy consumption by Zoomdata
     let obsDate = `${newItem.year}-${dateUtils.pad(newItem.month)}-${dateUtils.pad(newItem.day)} ${dateUtils.pad(newItem.hour)}:${dateUtils.pad(newItem.minute)}:00`;
     newItem.obs_time = obsDate;
+
+    //Now we are going to add the coordinates again, this time as string values.  This will be used in Zoomdata to do the multi-group aggregation method for displaying the markers.
+    //Leaving the floating point versions intact in case we need them for some other vis or future enhancement to maps
+//    newItem.lat_attr = newItem.lat.toString();
+//    newItem.lon_attr = newItem.lon.toString();
+    newItem.error_km = randUtils.getRandomFloat(0.0, 100.0);
     return newItem;
   }
 
@@ -94,9 +105,11 @@ let nbdcData = function(senders) {
     });
     console.log('final data to send: ', jsonLines);
     let sendOptions = {
-      sourceId : this.zoomdataSourceId
+      sourceId : this.zoomdataSourceId,
+      tableName: self.tableName
     }
     this.senders.forEach((sender) => {
+      console.log('sending with options', sendOptions);
       sender.sendData(jsonLines, sendOptions);
     });
   }

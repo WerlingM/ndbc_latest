@@ -34,9 +34,10 @@ let zoomdataUploadSender = function(connectionOptions, onMessageSent) {
             const numRows = data.length;
             req.on('response', (resp) => {
                 if(resp.statusCode != '200') {
+                    console.log("Error code ", resp.statusCode, resp)
                     self.onMessageSent({type:'error', msg: 'Error from request', details: resp});
                 } else {
-                    self.onMessageSent({type:'success', msg: 'Sent ' + numRows + 'rows to Zoomdata', details: resp});
+                    self.onMessageSent({type:'success', msg: 'Sent ' + numRows + ' rows to Zoomdata', details: resp});
                 }
             });
             req.on('error', (err) => {
