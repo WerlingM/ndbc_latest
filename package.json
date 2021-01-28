@@ -23,7 +23,7 @@
     "stringify-object": "^3.3.0"
   },
   "devDependencies": {
-    "electron": "^9.0.0",
+    "electron": "^9.4.0",
     "request-debug": "^0.2.0"
   }
 }
